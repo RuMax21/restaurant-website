@@ -1,11 +1,13 @@
-import { body, param, validationResult } from "express-validator";
+import { body, param } from "express-validator";
+import {handleValidation} from "../../utils/validation.utils";
 
 class ClientValidator {
     static validateClientId() {
         return [
             param('id')
                 .isInt({ min: 1 })
-                .withMessage('Incorrect ID')
+                .withMessage('Incorrect ID'),
+            handleValidation
         ];
     }
 
@@ -21,13 +23,14 @@ class ClientValidator {
                 .trim()
                 .notEmpty()
                 .withMessage('Phone is required')
-                .matches(/^\+?[0-9]{11}$/)
+                .matches(/^(\+7|8)\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/)
                 .withMessage('Invalid phone number'),
             body("email")
                 .optional()
                 .trim()
                 .isEmail()
-                .withMessage('Invalid email format')
+                .withMessage('Invalid email format'),
+            handleValidation,
         ]
     }
 }

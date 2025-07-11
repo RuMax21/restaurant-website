@@ -4,9 +4,9 @@ import { ClientCreateDto } from "./client.dto";
 const prisma = new PrismaClient();
 
 class ClientService {
-    async getClient(id: number) {
+    async getClientById(id: number) {
         return prisma.clients.findUnique({
-            where: { id }
+            where: {id}
         })
     }
 
