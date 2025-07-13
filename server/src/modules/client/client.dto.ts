@@ -1,5 +1,5 @@
-export interface ClientCreateDto {
+export interface ClientDto {
     fullName: string;
     phone: string;
-    email?: string;
+    email: string | null;
 }

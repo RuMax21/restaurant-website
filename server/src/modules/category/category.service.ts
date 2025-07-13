@@ -1,27 +1,41 @@
 import { PrismaClient } from "@prisma/client";
-import { CategoryCreateDto, CategoryUpdateDto } from "./category.dto";
+import {CategoryCreateDto, CategoryUpdateDto, CategoryDto} from "./category.dto";
+import {ApiError} from "../../exception/api-errors.exception";
 
-const prisma = new PrismaClient();
+export class CategoryService {
+    private categories = new PrismaClient().categories;
 
-class CategoryService {
-    async getAllCategories() {
-        return prisma.categories.findMany();
+    public async getAllCategories(): Promise<CategoryDto[]> {
+        return (await this.categories.findMany());
     }
 
-    async createCategory(data: CategoryCreateDto) {
-        return prisma.categories.create({ data });
+    public async createCategory(data: CategoryCreateDto): Promise<CategoryCreateDto> {
+        const findCategory: CategoryDto | null = await this.categories.findUnique({
+            where: { name: data.name }
+        });
+
+        if (findCategory) throw ApiError.Conflict(`This category "${data.name}" already exists`);
+        return (await this.categories.create({ data }));
     }
 
-    async updateCategory(id: number, data: CategoryUpdateDto) {
-        return prisma.categories.update({
+    public async updateCategory(id: number, data: CategoryUpdateDto): Promise<CategoryUpdateDto> {
+        const findCategory: CategoryDto | null = await this.categories.findUnique({
+            where: { id }
+        });
+
+        if (!findCategory) throw ApiError.Conflict(`This category "${data.name}" does not exist`);
+        return (await this.categories.update({
             where: { id },
             data
-        })
+        }));
     }
 
-    async deleteCategory(id: number) {
-        return prisma.categories.delete({ where: { id } });
+    public async deleteCategory(id: number): Promise<CategoryDto> {
+        const findCategory: CategoryDto | null = await this.categories.findUnique({
+            where: { id }
+        });
+
+        if (!findCategory) throw ApiError.Conflict(`The category with ID "${id}" does not exist`);
+        return (await this.categories.delete({ where: { id } }));
     }
 }
-
-export default new CategoryService();

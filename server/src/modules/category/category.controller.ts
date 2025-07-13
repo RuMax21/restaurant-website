@@ -1,68 +1,52 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from "http-status-codes";
-import { CategoryCreateDto, CategoryUpdateDto } from "./category.dto";
-import CategoryService from "./category.service";
+import {CategoryCreateDto, CategoryDto, CategoryUpdateDto} from "./category.dto";
+import { CategoryService } from "./category.service";
 
 class CategoriesController {
-    async getAllCategories(req: Request, res: Response) {
+    private categoryService: CategoryService = new CategoryService();
+
+    public async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const categories = await CategoryService.getAllCategories();
+            const categories: CategoryDto[] = await this.categoryService.getAllCategories();
+
             res.status(StatusCodes.OK).json(categories);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Couldn't find categories`,
-            });
+            next(error);
         }
     }
 
-    async createCategory(req: Request, res: Response) {
+    public async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data: CategoryCreateDto = req.body;
-            const category = await CategoryService.createCategory(data);
+            const category: CategoryCreateDto = await this.categoryService.createCategory(data);
+
             res.status(StatusCodes.CREATED).json(category);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Failed to create category`,
-            });
+            next(error)
         }
     }
 
-    async updateCategory(req: Request, res: Response) {
+    public async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
             const data: CategoryUpdateDto = req.body
-            const updatedCategory = await CategoryService.updateCategory( Number(id), data );
-
-            if (!updatedCategory) {
-                return res.status(StatusCodes.NOT_FOUND).json({
-                    message: `Category with id ${id} not found`,
-                })
-            }
+            const updatedCategory: CategoryUpdateDto = await this.categoryService.updateCategory( Number(id), data );
 
             res.status(StatusCodes.OK).json(updatedCategory);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Failed to update category`,
-            });
+            next(error);
         }
     }
 
-    async deleteCategory(req: Request, res: Response) {
+    public async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const deletedCategory = await CategoryService.deleteCategory( Number(id) );
-
-            if (!deletedCategory) {
-                return res.status(StatusCodes.NOT_FOUND).json({
-                    message: `Category with id ${id} not found`,
-                })
-            }
+            const deletedCategory: CategoryDto = await this.categoryService.deleteCategory( Number(id) );
 
             res.status(StatusCodes.OK).json(deletedCategory);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Failed to delete category`,
-            });
+            next(error);
         }
     }
 }

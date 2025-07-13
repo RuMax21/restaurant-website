@@ -1,22 +1,33 @@
 import { PrismaClient } from '@prisma/client';
-import { ClientCreateDto } from "./client.dto";
+import { ClientDto } from "./client.dto";
+import { ApiError } from "../../exception/api-errors.exception";
 
-const prisma = new PrismaClient();
+export class ClientService {
+    private client = new PrismaClient().clients;
 
-class ClientService {
-    async getClientById(id: number) {
-        return prisma.clients.findUnique({
-            where: {id}
-        })
+    public async getClientById(id: number): Promise<ClientDto> {
+        const findClient: ClientDto | null = await this.client.findUnique({
+            where: { id }
+        });
+
+        if (!findClient) throw ApiError.Conflict(`The client with ID "${id}" doesn't exist`);
+
+        return findClient;
     }
 
-    async getAllClients() {
-        return prisma.clients.findMany();
+    public async getAllClients(): Promise<ClientDto[]> {
+        return (await this.client.findMany());
     }
 
-    async createClient(data: ClientCreateDto) {
-        return prisma.clients.create({ data });
+    public async createClient(data: ClientDto): Promise<ClientDto> {
+        const findClient: ClientDto | null = await this.client.findFirst({
+            where: { OR: [
+                { phone: data.phone },
+                { email: data.email }
+            ]}
+        });
+        if (findClient) throw ApiError.Conflict(`A client with this number or email already exist`);
+
+        return (await this.client.create({ data }));
     }
 }
-
-export default new ClientService();

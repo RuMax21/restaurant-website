@@ -1,50 +1,40 @@
-import { Request, Response } from 'express';
-import ClientService from "./client.service";
-import {ClientCreateDto} from "./client.dto";
+import { Request, Response, NextFunction } from 'express';
+import { ClientService } from "./client.service";
+import {ClientDto} from "./client.dto";
 import { StatusCodes } from "http-status-codes";
 
 class ClientController {
-    async getClientById(req: Request, res: Response) {
+    private clientService: ClientService = new ClientService();
+
+    public async getClientById(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const { id } = req.params;
-            const client = await ClientService.getClientById( Number(id) );
+            const client: ClientDto = await this.clientService.getClientById( Number(id) );
 
-            if (!client) {
-                return res.status(StatusCodes.NOT_FOUND).json({
-                    message: 'Client not found'
-                });
-            }
-
-            res.status(StatusCodes.OK).json({
-                client
-            })
+            res.status(StatusCodes.OK).json(client);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Couldn't find the client`,
-            });
+            next(error);
         }
     }
 
-    async getAllClients(req: Request, res: Response) {
+    public async getAllClients(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const clients = await ClientService.getAllClients();
+            const clients: ClientDto[] = await this.clientService.getAllClients();
+
             res.status(StatusCodes.OK).json(clients);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Couldn't find clients`,
-            });
+            next(error);
         }
     }
 
-    async createClient(req: Request, res: Response) {
+    public async createClient(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const data: ClientCreateDto = req.body;
-            const client = await ClientService.createClient(data);
+            const data: ClientDto = req.body;
+            const client: ClientDto = await this.clientService.createClient(data);
+
             res.status(StatusCodes.CREATED).json(client);
         } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: `Failed to create client`,
-            });
+            next(error);
         }
     }
 }
