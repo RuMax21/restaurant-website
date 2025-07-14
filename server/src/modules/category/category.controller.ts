@@ -6,7 +6,7 @@ import { CategoryService } from "./category.service";
 class CategoriesController {
     private categoryService: CategoryService = new CategoryService();
 
-    public async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public getAllCategories = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
         try {
             const categories: CategoryDto[] = await this.categoryService.getAllCategories();
 
@@ -16,7 +16,7 @@ class CategoriesController {
         }
     }
 
-    public async createCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public createCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const data: CategoryCreateDto = req.body;
             const category: CategoryCreateDto = await this.categoryService.createCategory(data);
@@ -27,7 +27,7 @@ class CategoriesController {
         }
     }
 
-    public async updateCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public updateCategory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.params;
             const data: CategoryUpdateDto = req.body
@@ -39,7 +39,7 @@ class CategoriesController {
         }
     }
 
-    public async deleteCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public deleteCategory = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.params;
             const deletedCategory: CategoryDto = await this.categoryService.deleteCategory( Number(id) );

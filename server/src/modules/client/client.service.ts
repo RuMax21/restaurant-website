@@ -10,7 +10,7 @@ export class ClientService {
             where: { id }
         });
 
-        if (!findClient) throw ApiError.Conflict(`The client with ID "${id}" doesn't exist`);
+        if (!findClient) throw ApiError.NotFound(`The client with ID "${id}" doesn't exist`);
 
         return findClient;
     }

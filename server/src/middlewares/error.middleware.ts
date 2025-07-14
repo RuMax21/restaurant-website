@@ -7,7 +7,7 @@ export function errorMiddleware(
     res: Response,
     next: NextFunction
 ): void {
-
+    console.error("Caught error:", error);
     let response: ErrorResponse;
     let status: number;
 

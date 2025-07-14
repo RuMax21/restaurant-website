@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 class ClientController {
     private clientService: ClientService = new ClientService();
 
-    public async getClientById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public getClientById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id } = req.params;
             const client: ClientDto = await this.clientService.getClientById( Number(id) );
@@ -17,7 +17,7 @@ class ClientController {
         }
     }
 
-    public async getAllClients(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public getAllClients = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const clients: ClientDto[] = await this.clientService.getAllClients();
 
@@ -27,7 +27,7 @@ class ClientController {
         }
     }
 
-    public async createClient(req: Request, res: Response, next: NextFunction): Promise<void> {
+    public createClient = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const data: ClientDto = req.body;
             const client: ClientDto = await this.clientService.createClient(data);
