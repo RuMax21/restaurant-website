@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { ApiError, ErrorResponse } from "../exception/api-errors.exception";
+import { Request, Response, NextFunction } from 'express';
+import { ApiError, ErrorResponse } from '../exception/api-errors.exception';
 
 export function errorMiddleware(
     error: Error | ApiError,
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
 ): void {
-    console.error("Caught error:", error);
+    console.error('Caught error:', error);
     let response: ErrorResponse;
     let status: number;
 
@@ -17,10 +17,10 @@ export function errorMiddleware(
     } else {
         status = 500;
         response = {
-            message: "Unexpected error",
+            message: 'Unexpected error',
             errors: [],
             status,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
     }
 

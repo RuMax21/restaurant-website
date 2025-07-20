@@ -1,17 +1,35 @@
 import { Router } from 'express';
-import ReservationController from "./reservation.controller";
+import ReservationController from './reservation.controller';
+import ReservationValidator from './reservation.validator';
 
 const router: Router = Router();
 
 router.get('/', ReservationController.getAllReservation);
-// router.get('/upcoming', ReservationController.getUpcomingReservation);
-router.post('/', ReservationController.createReservation);
-/*router.put('/:id/status', ReservationController.updateStatusReservation);
-router.put('/:id', ReservationController.editReservation);
-router.delete('/:id', ReservationController.deleteReservation);
-router.get('/:id/dishes', ReservationController.getDishes);
-router.post('/:id/dishes', ReservationController.addDish);
-router.put('/:id/dishes', ReservationController.editDish);
-router.delete('/:id/dishes', ReservationController.deleteDish);*/
+router.get(
+    '/:id',
+    ReservationValidator.validateReservationId(),
+    ReservationController.getReservationById,
+);
+router.get('/upcoming', ReservationController.getUpcomingReservation);
+router.post(
+    '/',
+    ReservationValidator.validateCreateReservation(),
+    ReservationController.createReservation,
+);
+router.put(
+    '/:id',
+    ReservationValidator.validateUpdateReservation(),
+    ReservationController.updateReservation,
+);
+router.delete(
+    '/:id',
+    ReservationValidator.validateReservationId(),
+    ReservationController.deleteReservation,
+);
+router.put(
+    '/:id/status',
+    ReservationValidator.validateReservationId(),
+    ReservationController.updateStatusReservation,
+);
 
 export default router;

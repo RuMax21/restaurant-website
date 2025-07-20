@@ -1,5 +1,3 @@
-
-
 export interface ErrorDetails {
     field?: string;
     message: string;
@@ -32,19 +30,21 @@ export class ApiError extends Error {
         return new ApiError(400, message, errors);
     }
 
-    static NotFound(resource: string = "Resource"): ApiError {
+    static NotFound(resource: string = 'Resource'): ApiError {
         return new ApiError(404, `${resource} not found`);
     }
 
-    static Forbidden(message: string = "Access denied"): ApiError {
+    static Forbidden(message: string = 'Access denied'): ApiError {
         return new ApiError(403, message);
     }
 
-    static Conflict(message: string = "Data conflict"): ApiError {
+    static Conflict(message: string = 'Data conflict'): ApiError {
         return new ApiError(409, message);
     }
 
-    static InternalServerError(message: string = "Internal Server Error"): ApiError {
+    static InternalServerError(
+        message: string = 'Internal Server Error',
+    ): ApiError {
         return new ApiError(500, message);
     }
 
