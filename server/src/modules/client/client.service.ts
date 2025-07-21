@@ -14,8 +14,14 @@ export class ClientService {
         )) as ClientDto;
     }
 
-    public async getAllClients(): Promise<ClientDto[]> {
-        return (await this.client.findMany()) as ClientDto[];
+    public async getAllClients(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<ClientDto[]> {
+        return (await this.client.findMany({
+            skip: offset,
+            take: limit,
+        })) as ClientDto[];
     }
 
     public async createClient(data: ClientDto): Promise<ClientDto> {

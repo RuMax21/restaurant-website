@@ -6,13 +6,24 @@ import { throwIfExist, throwIfNotFound } from '../../utils/db.utils';
 export class TableService {
     private table = new PrismaClient().tables;
 
-    public async getAllTables(): Promise<TableDto[]> {
-        return (await this.table.findMany()) as TableDto[];
+    public async getAllTables(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<TableDto[]> {
+        return (await this.table.findMany({
+            skip: offset,
+            take: limit,
+        })) as TableDto[];
     }
 
-    public async getAllAvailableTables(): Promise<TableDto[]> {
+    public async getAllAvailableTables(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<TableDto[]> {
         return (await this.table.findMany({
             where: { isAvailable: true },
+            skip: offset,
+            take: limit,
         })) as TableDto[];
     }
 

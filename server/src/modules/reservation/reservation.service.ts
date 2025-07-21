@@ -12,8 +12,14 @@ import { throwIfNotFound } from '../../utils/db.utils';
 export class ReservationService {
     private prisma = new PrismaClient();
 
-    public async getAllReservations(): Promise<ReservationDto[]> {
-        return (await this.prisma.reservation.findMany()) as ReservationDto[];
+    public async getAllReservations(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<ReservationDto[]> {
+        return (await this.prisma.reservation.findMany({
+            skip: offset,
+            take: limit,
+        })) as ReservationDto[];
     }
 
     public async createReservation(
@@ -161,7 +167,10 @@ export class ReservationService {
         return updated;
     }
 
-    public async getUpcomingReservations(): Promise<ReservationDto[]> {
+    public async getUpcomingReservations(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<ReservationDto[]> {
         const now = new Date();
 
         return (await this.prisma.reservation.findMany({
@@ -171,6 +180,8 @@ export class ReservationService {
             },
             orderBy: { date: 'asc' },
             include: { reservationDishes: true },
+            skip: offset,
+            take: limit,
         })) as ReservationDto[];
     }
 }

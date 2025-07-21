@@ -6,8 +6,14 @@ import { throwIfNotFound, throwIfExist } from '../../utils/db.utils';
 export class DishService {
     private prisma = new PrismaClient();
 
-    public async getAllDishes(): Promise<DishDto[]> {
-        return (await this.prisma.dishes.findMany()) as DishDto[];
+    public async getAllDishes(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<DishDto[]> {
+        return (await this.prisma.dishes.findMany({
+            skip: offset,
+            take: limit,
+        })) as DishDto[];
     }
 
     public async getDishById(id: number): Promise<DishDto> {

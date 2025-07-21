@@ -9,8 +9,14 @@ import { throwIfExist, throwIfNotFound } from '../../utils/db.utils';
 export class CategoryService {
     private categories = new PrismaClient().categories;
 
-    public async getAllCategories(): Promise<CategoryDto[]> {
-        return await this.categories.findMany();
+    public async getAllCategories(
+        limit: number = 20,
+        offset: number = 0,
+    ): Promise<CategoryDto[]> {
+        return (await this.categories.findMany({
+            skip: offset,
+            take: limit,
+        })) as CategoryDto[];
     }
 
     public async createCategory(
@@ -21,7 +27,7 @@ export class CategoryService {
             `This category ${data.name} already exists`,
         );
 
-        return await this.categories.create({ data });
+        return (await this.categories.create({ data })) as CategoryDto;
     }
 
     public async updateCategory(
@@ -35,10 +41,10 @@ export class CategoryService {
             `This category with id ${id} doesn't exist`,
         );
 
-        return await this.categories.update({
+        return (await this.categories.update({
             where: { id },
             data,
-        });
+        })) as CategoryUpdateDto;
     }
 
     public async deleteCategory(id: number): Promise<CategoryDto> {
@@ -49,6 +55,6 @@ export class CategoryService {
             `The category with ID "${id}" does not exist`,
         );
 
-        return await this.categories.delete({ where: { id } });
+        return (await this.categories.delete({ where: { id } })) as CategoryDto;
     }
 }
