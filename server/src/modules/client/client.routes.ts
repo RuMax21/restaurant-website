@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import ClientController from './client.controller';
 import ClientValidator from './client.validator';
+import {authAdminMiddleware} from "../../middlewares/auth.middleware";
 
 const router: Router = Router();
 
@@ -9,7 +10,7 @@ router.get(
     ClientValidator.validateClientId(),
     ClientController.getClientById,
 );
-router.get('/', ClientController.getAllClients);
+router.get('/', authAdminMiddleware, ClientController.getAllClients);
 router.post(
     '/',
     ClientValidator.validateCreateClient(),
