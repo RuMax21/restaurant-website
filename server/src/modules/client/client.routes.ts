@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import ClientController from './client.controller';
 import ClientValidator from './client.validator';
-import {authAdminMiddleware} from "../../middlewares/auth.middleware";
+import { authAdminMiddleware } from '../../middlewares/auth.middleware';
 
 const router: Router = Router();
 

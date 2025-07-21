@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import ReservationController from './reservation.controller';
 import ReservationValidator from './reservation.validator';
-import {authAdminMiddleware} from "../../middlewares/auth.middleware";
+import { authAdminMiddleware } from '../../middlewares/auth.middleware';
 
 const router: Router = Router();
 

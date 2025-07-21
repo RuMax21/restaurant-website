@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import TablesController from './table.controller';
 import TableValidator from './table.validator';
-import {authAdminMiddleware} from "../../middlewares/auth.middleware";
+import { authAdminMiddleware } from '../../middlewares/auth.middleware';
 
 const router: Router = Router();
 

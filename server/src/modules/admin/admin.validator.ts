@@ -1,5 +1,5 @@
-import { body, param } from 'express-validator';
-import { handleValidation } from "../../utils/validation.utils";
+import { body } from 'express-validator';
+import { handleValidation } from '../../utils/validation.utils';
 
 class AdminValidator {
     static validateRegisterAdmin() {
@@ -17,13 +17,19 @@ class AdminValidator {
                 .isLength({ min: 8 })
                 .withMessage('Password must be at least 8 characters')
                 .matches(/[A-Z]/)
-                .withMessage('Password must contain at least 1 uppercase letter')
+                .withMessage(
+                    'Password must contain at least 1 uppercase letter',
+                )
                 .matches(/[a-z]/)
-                .withMessage('Password must contain at least 1 lowercase letter')
+                .withMessage(
+                    'Password must contain at least 1 lowercase letter',
+                )
                 .matches(/[0-9]/)
                 .withMessage('Password must contain at least 1 number')
                 .matches(/[^A-Za-z0-9]/)
-                .withMessage('Password must contain at least 1 special character'),
+                .withMessage(
+                    'Password must contain at least 1 special character',
+                ),
             body('fullName')
                 .trim()
                 .notEmpty()
@@ -31,7 +37,7 @@ class AdminValidator {
                 .isString()
                 .isLength({ min: 3 })
                 .withMessage('Full name must be at least 3 characters'),
-            handleValidation
+            handleValidation,
         ];
     }
 
@@ -47,7 +53,7 @@ class AdminValidator {
                 .trim()
                 .notEmpty()
                 .withMessage('Password is required'),
-            handleValidation
+            handleValidation,
         ];
     }
 }

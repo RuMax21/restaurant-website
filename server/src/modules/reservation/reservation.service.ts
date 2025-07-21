@@ -6,14 +6,14 @@ import {
     ReservationUpdateDto,
 } from './reservation.dto';
 import { ApiError } from '../../exception/api-errors.exception';
-import { ClientDto } from '../client/client.dto';
 import { TableDto } from '../table/table.dto';
+import { throwIfNotFound } from '../../utils/db.utils';
 
 export class ReservationService {
     private prisma = new PrismaClient();
 
     public async getAllReservations(): Promise<ReservationDto[]> {
-        return await this.prisma.reservation.findMany();
+        return (await this.prisma.reservation.findMany()) as ReservationDto[];
     }
 
     public async createReservation(
@@ -21,35 +21,29 @@ export class ReservationService {
     ): Promise<ReservationDto> {
         const { dishes, ...reservationData } = data;
 
-        const client: ClientDto | null = await this.prisma.clients.findUnique({
-            where: { id: data.clientId },
-        });
-        if (!client)
-            throw ApiError.NotFound(
-                `Client with id ${data.clientId} not found`,
-            );
+        await throwIfNotFound(
+            this.prisma.clients.findUnique({ where: { id: data.clientId } }),
+            `Client with ID ${data.clientId} not found`,
+        );
 
-        const table: TableDto | null = await this.prisma.tables.findUnique({
-            where: { id: data.tableId },
-        });
-        if (!table)
-            throw ApiError.NotFound(`Table with id ${data.clientId} not found`);
+        const table = (await throwIfNotFound(
+            this.prisma.tables.findUnique({ where: { id: data.tableId } }),
+            `Table with ID ${data.tableId} not found`,
+        )) as TableDto;
 
         if (!table.isAvailable)
             throw ApiError.Conflict(
-                `Table with id ${data.tableId} is not available`,
+                `Table with ID ${data.tableId} is not available`,
             );
 
         if (dishes && dishes.length > 0) {
             for (const dish of dishes) {
-                const dishExists = await this.prisma.dishes.findUnique({
-                    where: { id: dish.dishId },
-                });
-
-                if (!dishExists)
-                    throw ApiError.NotFound(
-                        `Dish with id ${dish.dishId} not found`,
-                    );
+                await throwIfNotFound(
+                    this.prisma.dishes.findUnique({
+                        where: { id: dish.dishId },
+                    }),
+                    `Dish with ID ${dish.dishId} not found`,
+                );
             }
         }
 
@@ -81,29 +75,27 @@ export class ReservationService {
             },
         });
 
-        return reservation;
+        return reservation as ReservationDto;
     }
 
     public async getReservationById(id: number): Promise<ReservationDto> {
-        const reservation = await this.prisma.reservation.findUnique({
-            where: { id: id },
-            include: { reservationDishes: true },
-        });
-        if (!reservation)
-            throw ApiError.NotFound(`Reservation with id ${id} not found`);
-
-        return reservation;
+        return (await throwIfNotFound(
+            this.prisma.reservation.findUnique({
+                where: { id },
+                include: { reservationDishes: true },
+            }),
+            `Reservation with ID ${id} not found`,
+        )) as ReservationDto;
     }
 
     public async updateReservation(
         id: number,
         data: ReservationUpdateDto,
     ): Promise<ReservationDto> {
-        const reservation = await this.prisma.reservation.findUnique({
-            where: { id },
-        });
-        if (!reservation)
-            throw ApiError.NotFound(`Reservation with id ${id} not found`);
+        await throwIfNotFound(
+            this.prisma.reservation.findUnique({ where: { id } }),
+            `Reservation with ID ${id} not found`,
+        );
 
         let dishesUpdate = {};
         if (data.dishes) {
@@ -120,7 +112,7 @@ export class ReservationService {
             };
         }
 
-        const updated = await this.prisma.reservation.update({
+        const updated = (await this.prisma.reservation.update({
             where: { id },
             data: {
                 ...data,
@@ -129,17 +121,15 @@ export class ReservationService {
             include: {
                 reservationDishes: true,
             },
-        });
+        })) as ReservationDto;
         return updated;
     }
 
     public async deleteReservation(id: number): Promise<void> {
-        const reservation: ReservationDto | null =
-            await this.prisma.reservation.findUnique({
-                where: { id },
-            });
-        if (!reservation)
-            throw ApiError.NotFound(`Reservation with id ${id} not found`);
+        await throwIfNotFound(
+            this.prisma.reservation.findUnique({ where: { id } }),
+            `Reservation with ID ${id} not found`,
+        );
 
         await this.prisma.reservationDish.deleteMany({
             where: { reservationId: id },
@@ -153,13 +143,12 @@ export class ReservationService {
         id: number,
         status: Status,
     ): Promise<ReservationDto> {
-        const reservation = await this.prisma.reservation.findUnique({
-            where: { id },
-        });
-        if (!reservation)
-            throw ApiError.NotFound(`Reservation with id ${id} not found`);
+        await throwIfNotFound(
+            this.prisma.reservation.findUnique({ where: { id } }),
+            `Reservation with ID ${id} not found`,
+        );
 
-        const updated = await this.prisma.reservation.update({
+        const updated = (await this.prisma.reservation.update({
             where: { id },
             data: {
                 status,
@@ -167,7 +156,7 @@ export class ReservationService {
             include: {
                 reservationDishes: true,
             },
-        });
+        })) as ReservationDto;
 
         return updated;
     }
@@ -175,13 +164,13 @@ export class ReservationService {
     public async getUpcomingReservations(): Promise<ReservationDto[]> {
         const now = new Date();
 
-        return await this.prisma.reservation.findMany({
+        return (await this.prisma.reservation.findMany({
             where: {
                 date: { gt: now },
                 status: { not: 'REJECTED' },
             },
             orderBy: { date: 'asc' },
             include: { reservationDishes: true },
-        });
+        })) as ReservationDto[];
     }
 }

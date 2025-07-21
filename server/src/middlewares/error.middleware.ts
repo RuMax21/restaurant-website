@@ -1,11 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { ApiError, ErrorResponse } from '../exception/api-errors.exception';
 
 export function errorMiddleware(
     error: Error | ApiError,
     req: Request,
     res: Response,
-    next: NextFunction,
 ): void {
     console.error('Caught error:', error);
     let response: ErrorResponse;
