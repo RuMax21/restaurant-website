@@ -3,6 +3,7 @@ version: '3.9'
 services:
   db:
     image: postgres:16.0
+    env_file: server/.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,10 +20,12 @@ services:
 
   server:
     image: restaurant_website
+    env_file: server/.env
     build:
       context: ./server
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -31,10 +34,11 @@ services:
 
   migrate:
     image: restaurant_website
+    env_file: server/.env
     depends_on:
       db:
         condition: service_healthy
-    command: npx prisma migrate deploy
+    command: sh -c "sleep 5 && npx prisma migrate deploy"
     environment:
       DATABASE_URL: ${DATABASE_URL}
 

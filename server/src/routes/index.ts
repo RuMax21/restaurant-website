@@ -13,6 +13,6 @@ router.use('/category', CategoryRoutes);
 router.use('/reservation', ReservationRoutes);
 router.use('/table', TableRoutes);
 router.use('/dish', DishRoutes);
-router.use('/admin', AdminRoutes);
+router.use('/admin-auth-auth', AdminRoutes);
 
 export default router;
