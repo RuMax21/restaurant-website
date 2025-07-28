@@ -4,6 +4,7 @@ import {
     ReservationCreateDto,
     ReservationDto,
     ReservationUpdateDto,
+    TimeSlotDto,
 } from './reservation.dto';
 import { ApiError } from '../../exception/api-errors.exception';
 import { TableDto } from '../table/table.dto';
@@ -16,9 +17,36 @@ export class ReservationService {
         limit: number = 20,
         offset: number = 0,
     ): Promise<ReservationDto[]> {
-        return (await this.prisma.reservation.findMany({
-            skip: offset,
-            take: limit,
+        const reservations: ReservationDto[] =
+            await this.prisma.reservation.findMany({
+                skip: offset,
+                take: limit,
+                include: {
+                    client: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phone: true,
+                        },
+                    },
+                },
+            });
+
+        return reservations.map(reservation => ({
+            id: reservation.id,
+            date: reservation.date,
+            time: reservation.time,
+            guestsCount: reservation.guestsCount,
+            status: reservation.status,
+            clientId: reservation.clientId,
+            tableId: reservation.tableId,
+            notes: reservation.notes,
+            client: {
+                id: reservation.client.id,
+                fullName: reservation.client.fullName,
+                phone: reservation.client.phone,
+                email: reservation.client.email,
+            },
         })) as ReservationDto[];
     }
 
@@ -57,7 +85,7 @@ export class ReservationService {
             where: {
                 tableId: data.tableId,
                 date: data.date,
-                status: { not: 'REJECTED' },
+                status: { not: 'CANCELLED' },
             },
         });
 
@@ -78,20 +106,73 @@ export class ReservationService {
             },
             include: {
                 reservationDishes: true,
+                client: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        phone: true,
+                        email: true,
+                    },
+                },
             },
         });
 
-        return reservation as ReservationDto;
+        return {
+            id: reservation.id,
+            date: reservation.date,
+            time: reservation.time,
+            guestsCount: reservation.guestsCount,
+            status: reservation.status,
+            clientId: reservation.clientId,
+            tableId: reservation.tableId,
+            notes: reservation.notes,
+            client: {
+                id: reservation.client.id,
+                fullName: reservation.client.fullName,
+                phone: reservation.client.phone,
+                email: reservation.client.email,
+            },
+        } as ReservationDto;
     }
 
     public async getReservationById(id: number): Promise<ReservationDto> {
-        return (await throwIfNotFound(
+        const reservation: ReservationDto | null = await throwIfNotFound(
             this.prisma.reservation.findUnique({
                 where: { id },
-                include: { reservationDishes: true },
+                include: {
+                    reservationDishes: true,
+                    client: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phone: true,
+                            email: true,
+                        },
+                    },
+                },
             }),
             `Reservation with ID ${id} not found`,
-        )) as ReservationDto;
+        );
+
+        if (!reservation)
+            throw ApiError.NotFound(`Reservation with ID ${id} not found`);
+
+        return {
+            id: reservation.id,
+            date: reservation.date,
+            time: reservation.time,
+            guestsCount: reservation.guestsCount,
+            status: reservation.status,
+            clientId: reservation.clientId,
+            tableId: reservation.tableId,
+            notes: reservation.notes,
+            client: {
+                id: reservation.client.id,
+                fullName: reservation.client.fullName,
+                phone: reservation.client.phone,
+                email: reservation.client.email,
+            },
+        };
     }
 
     public async updateReservation(
@@ -118,7 +199,7 @@ export class ReservationService {
             };
         }
 
-        const updated = (await this.prisma.reservation.update({
+        const updated: ReservationDto = await this.prisma.reservation.update({
             where: { id },
             data: {
                 ...data,
@@ -126,9 +207,33 @@ export class ReservationService {
             },
             include: {
                 reservationDishes: true,
+                client: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        phone: true,
+                        email: true,
+                    },
+                },
             },
-        })) as ReservationDto;
-        return updated;
+        });
+
+        return {
+            id: updated.id,
+            date: updated.date,
+            time: updated.time,
+            guestsCount: updated.guestsCount,
+            status: updated.status,
+            clientId: updated.clientId,
+            tableId: updated.tableId,
+            notes: updated.notes,
+            client: {
+                id: updated.client.id,
+                fullName: updated.client.fullName,
+                phone: updated.client.phone,
+                email: updated.client.email,
+            },
+        };
     }
 
     public async deleteReservation(id: number): Promise<void> {
@@ -154,17 +259,40 @@ export class ReservationService {
             `Reservation with ID ${id} not found`,
         );
 
-        const updated = (await this.prisma.reservation.update({
+        const updated: ReservationDto = await this.prisma.reservation.update({
             where: { id },
             data: {
                 status,
             },
             include: {
                 reservationDishes: true,
+                client: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        phone: true,
+                        email: true,
+                    },
+                },
             },
-        })) as ReservationDto;
+        });
 
-        return updated;
+        return {
+            id: updated.id,
+            date: updated.date,
+            time: updated.time,
+            guestsCount: updated.guestsCount,
+            status: updated.status,
+            clientId: updated.clientId,
+            tableId: updated.tableId,
+            notes: updated.notes,
+            client: {
+                id: updated.client.id,
+                fullName: updated.client.fullName,
+                phone: updated.client.phone,
+                email: updated.client.email,
+            },
+        };
     }
 
     public async getUpcomingReservations(
@@ -173,15 +301,114 @@ export class ReservationService {
     ): Promise<ReservationDto[]> {
         const now = new Date();
 
-        return (await this.prisma.reservation.findMany({
-            where: {
-                date: { gt: now },
-                status: { not: 'REJECTED' },
+        const reservations: ReservationDto[] =
+            await this.prisma.reservation.findMany({
+                where: {
+                    date: { gt: now },
+                    status: { not: 'CANCELLED' },
+                },
+                orderBy: { date: 'asc' },
+                include: {
+                    reservationDishes: true,
+                    client: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phone: true,
+                            email: true,
+                        },
+                    },
+                },
+                skip: offset,
+                take: limit,
+            });
+
+        return reservations.map(reservation => ({
+            id: reservation.id,
+            date: reservation.date,
+            time: reservation.time,
+            guestsCount: reservation.guestsCount,
+            status: reservation.status,
+            clientId: reservation.clientId,
+            tableId: reservation.tableId,
+            notes: reservation.notes,
+            client: {
+                id: reservation.client.id,
+                fullName: reservation.client.fullName,
+                phone: reservation.client.phone,
+                email: reservation.client.email,
             },
-            orderBy: { date: 'asc' },
-            include: { reservationDishes: true },
-            skip: offset,
-            take: limit,
         })) as ReservationDto[];
+    }
+
+    public async getReservationsByDate(date: string) {
+        const targetDate = new Date(date);
+        const startDate = new Date(targetDate.setHours(0, 0, 0, 0));
+        const endDate = new Date(targetDate.setHours(23, 59, 59, 999));
+
+        const reservations: ReservationDto[] =
+            await this.prisma.reservation.findMany({
+                where: {
+                    date: {
+                        gte: startDate,
+                        lte: endDate,
+                    },
+                    status: { not: 'CANCELLED' },
+                },
+                include: {
+                    client: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phone: true,
+                        },
+                    },
+                },
+                orderBy: { time: 'asc' },
+            });
+
+        const timeSlots: TimeSlotDto[] = [];
+        const startTime: number = 8;
+        const endTime: number = 22;
+
+        for (let hour: number = startTime; hour < endTime; hour++) {
+            const startTimeString = `${hour.toString().padStart(2, '0')}::00`;
+            const endTimeString = `${(hour + 1).toString().padStart(2, '0')}::00`;
+
+            const hourReservations: ReservationDto[] = reservations.filter(
+                reservation => {
+                    const [reservationHour] = reservation.time
+                        .split(':')
+                        .map(Number);
+                    return reservationHour === hour;
+                },
+            );
+
+            timeSlots.push({
+                startTime: startTimeString,
+                endTime: endTimeString,
+                reservations: hourReservations.map(reservation => ({
+                    id: reservation.id,
+                    date: reservation.date,
+                    time: reservation.time,
+                    guestsCount: reservation.guestsCount,
+                    status: reservation.status,
+                    clientId: reservation.clientId,
+                    tableId: reservation.tableId,
+                    notes: reservation.notes,
+                    client: {
+                        id: reservation.client.id,
+                        fullName: reservation.client.fullName,
+                        phone: reservation.client.phone,
+                        email: reservation.client.email,
+                    },
+                })),
+            });
+        }
+
+        return {
+            date,
+            timeSlots,
+        };
     }
 }

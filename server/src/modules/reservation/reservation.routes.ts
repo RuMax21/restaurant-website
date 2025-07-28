@@ -36,5 +36,11 @@ router.put(
     ReservationValidator.validateReservationId(),
     ReservationController.updateStatusReservation,
 );
+router.get(
+    '/schedule/:date',
+    authAdminMiddleware,
+    // TODO: here should be validation for date
+    ReservationController.getReservationsByDate,
+);
 
 export default router;

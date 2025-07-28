@@ -56,11 +56,13 @@ model Tables {
 model Reservation {
   id                Int               @id @default(autoincrement())
   date              DateTime
+  time              String
   guestsCount       Int
   status            Status            @default(PENDING)
   clientId          Int
   tableId           Int
   notes             String?
+  wasPaid           Boolean           @default(false)
   createAt          DateTime          @default(now())
   updateAt          DateTime          @updatedAt
   client            Clients           @relation(fields: [clientId], references: [id])
@@ -85,6 +87,8 @@ model ReservationDish {
 
 enum Status {
   PENDING
-  CONFIRMED
-  REJECTED
+  DEPOSITED
+  WAITING_PAYMENT
+  FINISHED
+  CANCELLED
 }

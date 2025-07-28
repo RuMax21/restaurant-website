@@ -8,6 +8,7 @@ export interface ReservationDishDto {
 
 export interface ReservationCreateDto {
     date: Date;
+    time: string;
     guestsCount: number;
     clientId: number;
     tableId: number;
@@ -17,6 +18,7 @@ export interface ReservationCreateDto {
 
 export interface ReservationUpdateDto {
     date?: Date;
+    time?: string;
     guestsCount?: number;
     status?: Status;
     tableId?: number;
@@ -27,9 +29,27 @@ export interface ReservationUpdateDto {
 export interface ReservationDto {
     id: number;
     date: Date;
+    time: string;
     guestsCount: number;
     status: Status;
     clientId: number;
     tableId: number;
     notes: string | null;
+    client: {
+        id: number;
+        fullName: string;
+        phone: string;
+        email?: string | null;
+    };
+}
+
+export interface TimeSlotDto {
+    startTime: string;
+    endTime: string;
+    reservations: ReservationDto[];
+}
+
+export interface ScheduleDayDto {
+    date: string;
+    timeSlots: TimeSlotDto[];
 }

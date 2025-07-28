@@ -4,6 +4,7 @@ import {
     ReservationCreateDto,
     ReservationDto,
     ReservationUpdateDto,
+    ScheduleDayDto,
 } from './reservation.dto';
 import { StatusCodes } from 'http-status-codes';
 import { Status } from '@prisma/client';
@@ -122,6 +123,21 @@ class ReservationController {
                 await this.reservationService.getUpcomingReservations();
 
             res.status(StatusCodes.OK).json(reservations);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public getReservationsByDate = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<void> => {
+        try {
+            const { date } = req.params;
+            const schedule: ScheduleDayDto =
+                await this.reservationService.getReservationsByDate(date);
+            res.status(StatusCodes.OK).json(schedule);
         } catch (error) {
             next(error);
         }
