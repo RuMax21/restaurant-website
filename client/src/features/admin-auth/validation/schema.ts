@@ -9,4 +9,4 @@ export const adminRegisterSchema = z.object({
 export const adminLoginSchema = z.object({
     email: z.email(),
     password: z.string().min(8),
-})
+});

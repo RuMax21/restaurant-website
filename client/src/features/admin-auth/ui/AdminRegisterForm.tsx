@@ -1,28 +1,28 @@
-import {useAdminAuth} from "../model/useAdminAuth.ts";
-import React from "react";
-import {Input} from "../../../shared/ui/Input.tsx";
-import {Button} from "../../../shared/ui/button/Button.tsx";
-import {adminRegisterSchema} from "../validation/schema.ts";
-import {AdminAuthFormLayout} from "./AdminAuthFormLayout.tsx";
-import {useAdminForm} from "../lib/useAdminForm.ts";
+import { useAdminAuth } from '../model/useAdminAuth.ts';
+import React from 'react';
+import { Input } from '../../../shared/ui/Input.tsx';
+import { Button } from '../../../shared/ui/button/Button.tsx';
+import { adminRegisterSchema } from '../validation/schema.ts';
+import { AdminAuthFormLayout } from './AdminAuthFormLayout.tsx';
+import { useAdminForm } from '../lib/useAdminForm.ts';
 
 export function AdminRegisterForm() {
     const { register, loading } = useAdminAuth();
     const { form, errors, handleChange, validate, setErrors } = useAdminForm(
         {
-            fullName: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
+            fullName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
         },
         adminRegisterSchema,
-    )
+    );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (form.password !== form.confirmPassword) {
-            setErrors({ confirmPassword: "Passwords do not match" });
+            setErrors({ confirmPassword: 'Passwords do not match' });
             return;
         }
 
@@ -36,9 +36,10 @@ export function AdminRegisterForm() {
             // add navigation
         } catch (error) {
             setErrors({
-                server: error instanceof Error ?
-                    error.message :
-                    "Registration failed. Plese try again.",
+                server:
+                    error instanceof Error
+                        ? error.message
+                        : 'Registration failed. Plese try again.',
             });
         }
     };
@@ -55,7 +56,9 @@ export function AdminRegisterForm() {
                         onChange={handleChange}
                     />
                     {errors.fullName && (
-                        <div className="text-red-500 text-sm mt-1">{errors.fullName}</div>
+                        <div className="text-red-500 text-sm mt-1">
+                            {errors.fullName}
+                        </div>
                     )}
                 </div>
                 <div className="mb-4">
@@ -67,7 +70,9 @@ export function AdminRegisterForm() {
                         onChange={handleChange}
                     />
                     {errors.email && (
-                        <div className="text-red-500 text-sm mt-1">{errors.email}</div>
+                        <div className="text-red-500 text-sm mt-1">
+                            {errors.email}
+                        </div>
                     )}
                 </div>
                 <div className="mb-4">
@@ -79,7 +84,9 @@ export function AdminRegisterForm() {
                         onChange={handleChange}
                     />
                     {errors.password && (
-                        <div className="text-red-500 text-sm mt-1">{errors.password}</div>
+                        <div className="text-red-500 text-sm mt-1">
+                            {errors.password}
+                        </div>
                     )}
                 </div>
                 <div className="mb-4">
@@ -91,11 +98,13 @@ export function AdminRegisterForm() {
                         onChange={handleChange}
                     />
                     {errors.confirmPassword && (
-                        <div className="text-red-500 text-sm mt-1">{errors.confirmPassword}</div>
+                        <div className="text-red-500 text-sm mt-1">
+                            {errors.confirmPassword}
+                        </div>
                     )}
                 </div>
                 <Button type="submit" disabled={loading} className="w-full">
-                    { loading ? "We're registering..." : "Register" }
+                    {loading ? "We're registering..." : 'Register'}
                 </Button>
             </form>
         </AdminAuthFormLayout>

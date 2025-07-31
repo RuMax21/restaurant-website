@@ -1,6 +1,6 @@
-import { adminRegisterSchema, adminLoginSchema } from "../validation/schema.ts";
-import {type ChangeEvent, useState} from "react";
-import {ZodError} from "zod";
+import { adminRegisterSchema, adminLoginSchema } from '../validation/schema.ts';
+import { type ChangeEvent, useState } from 'react';
+import { ZodError } from 'zod';
 
 export function useAdminForm<T extends Record<string, string>>(
     initialValue: T,
@@ -24,7 +24,7 @@ export function useAdminForm<T extends Record<string, string>>(
         } catch (error) {
             if (error instanceof ZodError) {
                 const fieldError: Record<string, string> = {};
-                error.issues.forEach( issue => {
+                error.issues.forEach(issue => {
                     if (typeof issue.path[0] === 'string') {
                         fieldError[issue.path[0]] = issue.message;
                     }

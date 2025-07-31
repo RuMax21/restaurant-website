@@ -1,11 +1,11 @@
-import type {ReactNode} from "react";
+import type { ReactNode } from 'react';
 
 export function AdminAuthFormLayout({
     title,
     children,
 }: {
     title: string;
-    children: ReactNode
+    children: ReactNode;
 }) {
     return (
         <div className="w-full max-w-sm mx-auto p-8 bg-white rounded">
