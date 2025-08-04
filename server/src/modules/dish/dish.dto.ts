@@ -1,3 +1,5 @@
+import { CategoryDto } from '../category/category.dto';
+
 export interface DishCreateDto {
     name: string;
     description: string;
@@ -24,6 +26,7 @@ export interface DishDto {
     price: number;
     categoryId: number;
     imageUrls: string[];
+    category?: CategoryDto;
     /*createdAt: Date;
     updatedAt: Date;*/
 }

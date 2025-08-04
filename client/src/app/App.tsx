@@ -1,11 +1,5 @@
-import AdminAuthPage from '../pages/admin-auth/AdminAuthPage.tsx';
-import { ContactPage } from '../pages/contact/ContactPage.tsx';
+import { AppRouter } from './router.tsx';
 
 export default function App() {
-    return (
-        <>
-            <AdminAuthPage />
-            <ContactPage />
-        </>
-    );
+    return <AppRouter />;
 }

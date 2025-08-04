@@ -12,7 +12,8 @@ class DishController {
         next: NextFunction,
     ): Promise<void> => {
         try {
-            const dishes: DishDto[] = await this.dishService.getAllDishes();
+            const { limit, offset, categoryId } = req.query;
+            const dishes: DishDto[] = await this.dishService.getAllDishes(Number(limit), Number(offset), categoryId ? Number(categoryId) : undefined);
             res.status(StatusCodes.OK).json(dishes);
         } catch (error) {
             next(error);

@@ -9,10 +9,14 @@ export class DishService {
     public async getAllDishes(
         limit: number = 20,
         offset: number = 0,
+        categoryId?: number,
     ): Promise<DishDto[]> {
         return (await this.prisma.dishes.findMany({
-            skip: offset,
-            take: limit,
+            where: {
+                categoryId: categoryId,
+            },
+            // skip: offset,
+            // take: limit,
         })) as DishDto[];
     }
 
