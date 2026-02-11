@@ -1,5 +1,6 @@
+import type React from 'react';
 import { AdminAuthSwitcher } from '../../widgets/admin-auth/ui/AdminAuthSwitcher.tsx';
 
-export default function AdminAuthPage() {
+export const AdminAuthPage: React.FC = () => {
     return <AdminAuthSwitcher />;
 }

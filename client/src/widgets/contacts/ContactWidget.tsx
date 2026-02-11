@@ -1,6 +1,6 @@
 import React from 'react';
-import { ContactMapSection } from './ContactMapSection';
-import { ContactInfoSection } from './ContactInfoSection';
+import { ContactMapSection } from './ui/ContactMapSection';
+import { ContactInfoSection } from './ui/ContactInfoSection';
 
 export const ContactWidget: React.FC = () => {
     return (

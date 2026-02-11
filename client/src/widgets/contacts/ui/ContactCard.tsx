@@ -1,10 +1,5 @@
-import React from 'react';
-
-interface ContactCardProps {
-    icon: React.ReactNode;
-    title: string;
-    children: React.ReactNode;
-}
+import type React from 'react';
+import type { ContactCardProps } from './model';
 
 export const ContactCard: React.FC<ContactCardProps> = ({
     icon,
