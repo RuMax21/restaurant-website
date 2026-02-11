@@ -1,6 +1,6 @@
 import React from 'react';
-import { contactsData } from '../../../entities/contacts/model/ContactsInfo.ts';
-import { OpenStreetMap } from '../../../shared/ui/map/OpenStreetMap.tsx';
+import { contactsData } from '@/entities/contacts/model/ContactsInfo.ts';
+import { OpenStreetMap } from '@/shared/ui/map/OpenStreetMap.tsx';
 
 export const ContactMapSection: React.FC = () => {
     return (

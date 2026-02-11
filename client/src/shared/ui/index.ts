@@ -3,7 +3,7 @@ export * from './Input';
 export * from './FormField';
 export * from './Notification';
 export * from './Navigation';
-export * from './ContactIcons';
+export * from '../../widgets/contact/ui/ContactIcon';
 export * from './card';
 export * from './button';
 export * from './modal';
