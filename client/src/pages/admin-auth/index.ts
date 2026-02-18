@@ -1,1 +1,0 @@
-export { AdminAuthPage } from './AdminAuthPage';
