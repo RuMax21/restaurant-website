@@ -1,7 +1,10 @@
+import AdminLogin from '../pages/AdminLogin/AdminLogin';
+// import ContactPage from '../pages/Contact';
+
 function App() {
   return (
     <>
-      App
+      <AdminLogin />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { renderToString } from 'react-dom/server';
 import L from 'leaflet';
+import styles from './LocationMap.module.scss';
 import type { LocationMapProps } from './model';
 import { DEFAULT_ZOOM, TILE_URL } from './constants';
 import { MapTooltip, MapMarker } from './components';
@@ -57,5 +58,5 @@ export default function LocationMap({
     };
   }, [latitude, longitude, title, zoom]);
 
-  return <div ref={mapRef} className="w-full h-96 overflow-hidden" />;
+  return <div ref={mapRef} className={styles.map} />;
 }
